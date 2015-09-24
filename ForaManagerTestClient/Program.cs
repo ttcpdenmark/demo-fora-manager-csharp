@@ -10,7 +10,6 @@ namespace ForaManagerTestClient
         private static String URL = "";
         private static String ClientID = "";
         private static String EncryptionKey = "";
-        private static String EncryptionIV = "";
         private static List<String> FilterWords = new List<String>() { "chokoladekage", "kaffe" };
 
         static void Main(string[] args)
@@ -73,7 +72,7 @@ namespace ForaManagerTestClient
 
         private static List<String> AnalyseText(String text)
         {
-            String response = MyWebClient.DoRequest(URL, ClientID, EncryptionKey, EncryptionIV, text, FilterWords);
+            String response = MyWebClient.DoRequest(URL, ClientID, EncryptionKey, text, FilterWords);
             return JSONParser.Parse(response);
         }
     }

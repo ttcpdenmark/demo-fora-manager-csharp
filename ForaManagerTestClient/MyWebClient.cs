@@ -10,10 +10,12 @@ namespace ForaManagerTestClient
 {
     class MyWebClient
     {
-        internal static string DoRequest(String _URL, String clientID, String encryptionKey, String encryptionIV, String text, List<String> filterWordList)
+        internal static string DoRequest(String _URL, String clientID, String encryptionKey, String text, List<String> filterWordList)
         {
             String filterwords = "";
             GetFilterWordsInJSONFormat(ref filterwords, filterWordList);
+
+            String encryptionIV = GenerateIV();
 
             String jsondata = "{\"inputtext\":\"" + text + "\",\"filterwords\":"+filterwords+",\"time\":" + (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds + ",\"randomvalue\":" + (new Random()).Next(Int32.MaxValue) + "}";
             String data = AesHelper.Encrypt_AES(jsondata, encryptionKey, encryptionIV);
@@ -25,6 +27,7 @@ namespace ForaManagerTestClient
                     byte[] response = client.UploadValues(_URL, new NameValueCollection()
                     {
                         { "cid", clientID },
+                        { "eiv", encryptionIV },
                         { "data", data }
                     });
 
@@ -37,6 +40,15 @@ namespace ForaManagerTestClient
                 }
             }
             return null;
+        }
+
+        private static String GenerateIV()
+        {
+            String t = "";
+            Random r = new Random();
+            while (t.Length < 32)
+                t += r.Next(9);
+            return t;
         }
 
         private static void GetFilterWordsInJSONFormat(ref string filterwords, List<string> filterWordList)
